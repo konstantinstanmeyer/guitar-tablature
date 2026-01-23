@@ -2,8 +2,8 @@ import './App.css'
 
 function App() {
   return (
-    <main>
-
+    <main className="bg-black">
+      <p className="text-red-500">hello</p>
     </main>
   )
 }

@@ -106,6 +106,34 @@ function App() {
     }
   }
 
+  function insertColumnAt (lineId: string, position: number) {
+    setLines((prev) => {
+      const lineIndex = prev.findIndex((l) => l.id === lineId);
+      if (lineIndex === -1) return prev;
+
+      return prev.map((line, index) => {
+        if (index === lineIndex) {
+          // Insert new column at the next column index
+          return {
+            ...line,
+            strings: line.strings.map((str) => {
+              const before = str.slice(0, position);
+              const after = str.slice(position);
+              return before + '-' + after;
+            }),
+          };
+        } else {
+          // Extend other lines by adding a dash at the end maintaining consistend line lenghts
+          // appending to the end of their strings to not interrupt tab behavior
+          return {
+            ...line,
+            strings: line.strings.map((str) => str + '-'),
+          };
+        }
+      });
+    });
+  };
+
   function handleKeyDown (e: KeyboardEvent, lineId: string, stringIndex: number, position: number){
     // non-deprecated keydown value for later keyboard actions handling
     const code = e.code;
@@ -147,17 +175,23 @@ function App() {
           position: 0,
         });
       }
+    } 
+
+    // Editing
+    else if(key === 'Enter') {
+      e.preventDefault();
+      insertColumnAt(lineId, position);
     }
   }
 
   return (
-    <main className="flex items-center justify-center h-screen w-full">
-      <div>
+    <main className="flex items-center justify-center h-screen max-w-350">
+      <div className="">
         {lines.map((line, lineIndex) => 
           <div className="courier font-mono" key={line.id}>
             <h2>Phrase {lineIndex + 1}</h2>
             {STRING_NAMES.map((stringName, stringIndex) => 
-            <div key={stringName} className="flex">
+            <div key={stringName} className="flex overflow-x-scroll">
               <span className="w-6 text-purple-600 font-bold">{stringName}</span>
               <span className="w-6">|</span>
               <div className="flex">
@@ -186,7 +220,7 @@ function App() {
                       border-none
                       p-0
                       text-center
-                      text-sm
+                      text-xs
                       font-mono
                       text-slate-800
                       cursor-pointer

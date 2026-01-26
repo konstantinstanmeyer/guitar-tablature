@@ -44,6 +44,7 @@ function App() {
             <div className="flex">
               {line.strings[stringIndex].split('').map((char, charPosition) => 
                 <input
+                  key={charPosition}
                   value={char}
                   className={`
                     w-5 text-center

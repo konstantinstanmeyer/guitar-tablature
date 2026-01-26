@@ -87,6 +87,25 @@ function App() {
     }
   }
 
+  function moveToNextString(lineId: string, currentStringIndex: number, position: number){
+    const lineIndex = lines.findIndex((l => l.id === lineId));
+    if (lineIndex === -1) return;
+
+    if (currentStringIndex < STRING_NAMES.length - 1) {
+      setActiveCell({
+        lineId,
+        stringIndex: currentStringIndex + 1,
+        position,
+      });
+    } else if (lineIndex < lines.length - 1) {
+      setActiveCell({
+        lineId: lines[lineIndex + 1].id,
+        stringIndex: 0,
+        position,
+      });
+    }
+  }
+
   function handleKeyDown (e: KeyboardEvent, lineId: string, stringIndex: number, position: number){
     // non-deprecated keydown value for later keyboard actions handling
     const code = e.code;
@@ -102,6 +121,32 @@ function App() {
     if(key === 'ArrowUp'){
       e.preventDefault();
       moveToPrevString(lineId, stringIndex, position)
+    } else if(key === 'ArrowDown'){
+      e.preventDefault();
+      moveToNextString(lineId, stringIndex, position);
+    } else if (key === 'ArrowLeft'){
+      e.preventDefault();
+      if (position > 0) {
+        setActiveCell({ lineId, stringIndex, position: position - 1 });
+      } else if (lineIndex > 0) {
+        const prevLine = lines[lineIndex - 1];
+        setActiveCell({
+          lineId: prevLine.id,
+          stringIndex,
+          position: prevLine.strings[0].length - 1,
+        });
+      }
+    } else if (key === 'ArrowRight') {
+      e.preventDefault();
+      if (position < lineLength - 1) {
+        setActiveCell({ lineId, stringIndex, position: position + 1 });
+      } else if (lineIndex < lines.length - 1) {
+        setActiveCell({
+          lineId: lines[lineIndex + 1].id,
+          stringIndex,
+          position: 0,
+        });
+      }
     }
   }
 

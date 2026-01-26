@@ -4,10 +4,6 @@
   font-family: 'Courier New', monospace;
 }
 
-.tab-cell {
-  transition: background 0.1s ease;
-}
-
 .tab-cell.column-highlight {
   background: #f5f3ff;
 }

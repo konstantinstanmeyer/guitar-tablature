@@ -50,7 +50,7 @@ function App() {
   // Storing refs to each input element for focusing effeciency on later function calls
   const cellRefs = useRef<Map<string, HTMLInputElement>>(new Map());
 
-  function getCellKey(lineId: string, stringIndex: number, position: number): string{
+  function getCellKey(lineId: string, stringIndex: number, position: number): string {
     return `${lineId}-${stringIndex}-${position}`
   }
 
@@ -59,24 +59,26 @@ function App() {
   }
 
   function handleKeyDown (e: KeyboardEvent, lineId: string, stringIndex: number, position: number){
-    // const code = e.code;
+    const code = e.code;
 
-    // const key = e.key;
-    // const incomingLine = line.id === lineId;
-    // if(!incomingLine) return;
+    const key = e.key;
+    const line = lines.find(l => l.id === lineId);
+    if(!line) return;
 
-    // const lineLength = line.strings[0].length;
-    // // change handling once program handles multiple phrase lines
-    // const lineIndex = 0;
+    const lineLength = line.strings[0].length;
+    const lineIndex = lines.findIndex((l) => l.id === lineId);
+    
+    
   }
 
   return (
     <main className="flex items-center justify-center h-screen w-full">
       <div>
         {lines.map((line, lineIndex) => 
-          <div key={line.id}>
+          <div className="courier font-mono" key={line.id}>
+            <h2>Phrase {lineIndex + 1}</h2>
             {STRING_NAMES.map((stringName, stringIndex) => 
-            <div key={stringName} className="flex courier">
+            <div key={stringName} className="flex">
               <span className="w-6 text-purple-600 font-bold">{stringName}</span>
               <span className="w-6">|</span>
               <div className="flex">
@@ -113,6 +115,7 @@ function App() {
                       caret-transparent
                       tab-cell
                       hover:bg-[#f1f5f9]
+                      font-light!
                         ${
                           activeCell?.lineId === line.id &&
                           activeCell?.stringIndex === stringIndex &&

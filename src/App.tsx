@@ -1,6 +1,6 @@
 import './App.css'
 
-import { useEffect, useMemo, useState } from 'react';
+import { useRef, useState } from 'react';
 import type { TabLine } from "../types/types"
 
 // Standard tuning, to later get handling for alternative tuning/more strings
@@ -24,11 +24,25 @@ function createEmptyLine(length: number = DEFAULT_LENGTH): TabLine{
 }
 
 function App() {
-  
+  const [line, setLine] = useState<TabLine>(createEmptyLine());
+
+  // Storing refs to each input element for focusing effeciency on later function calls
+  const cellRefs = useRef<Map<string, HTMLInputElement>>(new Map());
 
   return (
     <main className="">
-      
+      {STRING_NAMES.map((stringName, stringIndex) => 
+        <div key={stringName} className="">
+          <span>{stringName}</span>
+          <div>
+            {line.strings[stringIndex].split('').map((char, charPosition) => 
+              <input
+                value={char}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </main>
   )
 }

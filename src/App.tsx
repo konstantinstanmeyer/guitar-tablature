@@ -208,15 +208,16 @@ function App() {
   }
 
   return (
-    <main className="flex items-center justify-center h-screen max-w-350 relative">
-      <div className="">
+    <main className="flex items-center justify-center h-screen w-full relative px-24">
+      <div className="border p-3 rounded-md w-full">
         {lines.map((line, lineIndex) => 
-          <div className="courier font-mono" key={line.id}>
+          <div className="courier font-mono max-w-350 overflow-x-scroll" key={line.id}>
             <h2>Phrase {lineIndex + 1}</h2>
+            <div className="overflow-x-scroll">
             {STRING_NAMES.map((stringName, stringIndex) => 
-            <div key={stringName} className="flex overflow-x-scroll">
+            <div key={stringName} className="flex">
               <span className="w-6 text-purple-600 font-bold">{stringName}</span>
-              <span className="w-6">|</span>
+              <span className="w-6 m-0">|</span>
               <div className="flex">
                 {line.strings[stringIndex].split('').map((char, charPosition) => 
                   <input
@@ -276,6 +277,7 @@ function App() {
               <span className="w-6">|</span>
             </div>
           )}
+          </div>
         </div>
         )}
       </div>

@@ -4,7 +4,25 @@
   font-family: 'Courier New', monospace;
 }
 
-.active {
-  color: white; 
-  background-color: purple;
+.tab-cell {
+  transition: background 0.1s ease;
+}
+
+.tab-cell.column-highlight {
+  background: #f5f3ff;
+}
+
+.tab-cell.active {
+  background: #7c3aed;
+  color: white;
+  border-radius: 4px;
+}
+
+.tab-cell:focus {
+  background: #ede9fe;
+}
+
+.tab-cell.active:focus {
+  background: #7c3aed;
+  color: white;
 }

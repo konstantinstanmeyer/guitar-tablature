@@ -39,7 +39,7 @@ function App() {
   }
 
   return (
-    <main className="flex justify-center">
+    <main className="flex items-center justify-center h-screen w-full">
       <div>
         {STRING_NAMES.map((stringName, stringIndex) => 
           <div key={stringName} className="flex courier">
@@ -66,15 +66,34 @@ function App() {
                   }}
                   value={char}
                   className={`
-                    w-5 text-center
-                    ${
-                      activeCell?.lineId === line.id &&
-                      activeCell?.stringIndex === stringIndex &&
-                      activeCell?.position === charPosition
-                        ? 'active'
-                        : ''
-                    }
-                  `}
+                    w-5 h-[26px]
+                    bg-transparent
+                    border-none
+                    p-0
+                    text-center
+                    text-sm
+                    font-mono
+                    text-slate-800
+                    cursor-pointer
+                    outline-none
+                    caret-transparent
+                    tab-cell
+                    hover:bg-[#f1f5f9]
+                      ${
+                        activeCell?.lineId === line.id &&
+                        activeCell?.stringIndex === stringIndex &&
+                        activeCell?.position === charPosition
+                          ? 'active'
+                          : ''
+                      }
+
+                      ${
+                        activeCell?.lineId === line.id &&
+                        activeCell?.position === charPosition
+                          ? 'column-highlight'
+                          : ''
+                      }
+                    `}
                   onClick={() => handleCellClick(line.id, stringIndex, charPosition)}
                 />
               )}

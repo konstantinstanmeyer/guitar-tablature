@@ -1,7 +1,7 @@
 import './App.css'
 
 import { useRef, useState } from 'react';
-import type { TabLine } from "../types/types"
+import { type ActiveCell, type TabLine } from "../types/types"
 
 // Standard tuning, to later get handling for alternative tuning/more strings
 const STRING_NAMES = ['e', 'B', 'G', 'D', 'A', 'E'];
@@ -25,25 +25,44 @@ function createEmptyLine(length: number = DEFAULT_LENGTH): TabLine{
 
 function App() {
   const [line, setLine] = useState<TabLine>(createEmptyLine());
+  const [activeCell, setActiveCell] = useState<ActiveCell | null>(null);
 
   // Storing refs to each input element for focusing effeciency on later function calls
   const cellRefs = useRef<Map<string, HTMLInputElement>>(new Map());
 
+  function handleCellClick(lineId: string, stringIndex: number, position: number) {
+    setActiveCell({ lineId, stringIndex, position });
+  }
+
   return (
-    <main className="">
-      {STRING_NAMES.map((stringName, stringIndex) => 
-        <div key={stringName} className="flex courier">
-          <span className="w-6">{stringName}</span>
-          <div className="flex">
-            {line.strings[stringIndex].split('').map((char, charPosition) => 
-              <input
-                value={char}
-                className="w-5"
-              />
-            )}
+    <main className="flex justify-center">
+      <div>
+        {STRING_NAMES.map((stringName, stringIndex) => 
+          <div key={stringName} className="flex courier">
+            <span className="w-6 text-purple-600 font-bold">{stringName}</span>
+            <span className="w-6">|</span>
+            <div className="flex">
+              {line.strings[stringIndex].split('').map((char, charPosition) => 
+                <input
+                  value={char}
+                  className={`
+                    w-5 text-center
+                    ${
+                      activeCell?.lineId === line.id &&
+                      activeCell?.stringIndex === stringIndex &&
+                      activeCell?.position === charPosition
+                        ? 'active'
+                        : ''
+                    }
+                  `}
+                  onClick={() => handleCellClick(line.id, stringIndex, charPosition)}
+                />
+              )}
+            </div>
+            <span className="w-6">|</span>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </main>
   )
 }

@@ -30,6 +30,10 @@ function App() {
   // Storing refs to each input element for focusing effeciency on later function calls
   const cellRefs = useRef<Map<string, HTMLInputElement>>(new Map());
 
+  function getCellKey(lineId: string, stringIndex: number, position: number): string{
+    return `${lineId}-${stringIndex}-${position}`
+  }
+
   function handleCellClick(lineId: string, stringIndex: number, position: number) {
     setActiveCell({ lineId, stringIndex, position });
   }
@@ -45,6 +49,21 @@ function App() {
               {line.strings[stringIndex].split('').map((char, charPosition) => 
                 <input
                   key={charPosition}
+                  ref={(el) => {
+                    // stores refs as a formatted string
+                    // NOTE: possibly return to this for more efficient handling
+                    const key = getCellKey(
+                      line.id,
+                      stringIndex,
+                      charPosition
+                    )
+                    // check if cell is still in DOM, or delete ref from ref Map object
+                    if(el) {
+                      cellRefs.current.set(key, el)
+                    } else {
+                      cellRefs.current.delete(key)
+                    }
+                  }}
                   value={char}
                   className={`
                     w-5 text-center

@@ -106,6 +106,22 @@ function App() {
     }
   }
 
+  function updateString (lineId: string, stringIndex: number, position: number, value: string) {
+    setLines((prev) =>
+      prev.map((line) => {
+        if (line.id !== lineId) return line;
+        const newStrings = [...line.strings];
+        const currentString = newStrings[stringIndex];
+
+        const newString = currentString.split('');
+        newString[position] = value === '' ? '-' : value;
+        newStrings[stringIndex] = newString.join('');
+
+        return { ...line, strings: newStrings };
+      })
+    );
+  };
+
   function insertColumnAt (lineId: string, position: number) {
     setLines((prev) => {
       const lineIndex = prev.findIndex((l) => l.id === lineId);
@@ -181,6 +197,13 @@ function App() {
     else if(key === 'Enter') {
       e.preventDefault();
       insertColumnAt(lineId, position);
+    }
+
+    // String input
+    else if (/^[0-9hpbr\/\\x~()|s]$/.test(key) || key === '-') {
+      e.preventDefault();
+      updateString(lineId, stringIndex, position, key);
+      moveToNextString(lineId, stringIndex, position);
     }
   }
 

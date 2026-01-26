@@ -68,7 +68,27 @@ function App() {
     setActiveCell({ lineId, stringIndex, position });
   }
 
+  function moveToPrevString(lineId: string, currentStringIndex: number, position: number){
+    const lineIndex = lines.findIndex((l => l.id === lineId));
+    if (lineIndex === -1) return;
+
+    if(currentStringIndex > 0) {
+      setActiveCell({
+        lineId,
+        stringIndex: currentStringIndex - 1,
+        position: position
+      })
+    } else if (lineIndex > 0) {
+      setActiveCell({
+        lineId: lines[lineIndex - 1].id,
+        stringIndex: STRING_NAMES.length - 1,
+        position,
+      });
+    }
+  }
+
   function handleKeyDown (e: KeyboardEvent, lineId: string, stringIndex: number, position: number){
+    // non-deprecated keydown value for later keyboard actions handling
     const code = e.code;
 
     const key = e.key;
@@ -78,7 +98,11 @@ function App() {
     const lineLength = line.strings[0].length;
     const lineIndex = lines.findIndex((l) => l.id === lineId);
     
-    
+    // Navigation
+    if(key === 'ArrowUp'){
+      e.preventDefault();
+      moveToPrevString(lineId, stringIndex, position)
+    }
   }
 
   return (

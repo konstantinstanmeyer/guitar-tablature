@@ -133,8 +133,8 @@ function App() {
           return {
             ...line,
             strings: line.strings.map((str) => {
-              const before = str.slice(0, position);
-              const after = str.slice(position);
+              const before = str.slice(0, position + 1);
+              const after = str.slice(position + 1);
               return before + '-' + after;
             }),
           };
@@ -208,7 +208,7 @@ function App() {
   }
 
   return (
-    <main className="flex items-center justify-center h-screen max-w-350">
+    <main className="flex items-center justify-center h-screen max-w-350 relative">
       <div className="">
         {lines.map((line, lineIndex) => 
           <div className="courier font-mono" key={line.id}>

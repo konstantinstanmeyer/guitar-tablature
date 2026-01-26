@@ -44,7 +44,7 @@ function createEmptyLine(length: number = DEFAULT_LENGTH): TabLine{
 }
 
 function App() {
-  const [line, setLine] = useState<TabLine>(createEmptyLine());
+  const [lines, setLines] = useState<TabLine[]>([createEmptyLine()]);
   const [activeCell, setActiveCell] = useState<ActiveCell | null>(null);
 
   // Storing refs to each input element for focusing effeciency on later function calls
@@ -59,73 +59,85 @@ function App() {
   }
 
   function handleKeyDown (e: KeyboardEvent, lineId: string, stringIndex: number, position: number){
-    console.log(e.code);
+    // const code = e.code;
+
+    // const key = e.key;
+    // const incomingLine = line.id === lineId;
+    // if(!incomingLine) return;
+
+    // const lineLength = line.strings[0].length;
+    // // change handling once program handles multiple phrase lines
+    // const lineIndex = 0;
   }
 
   return (
     <main className="flex items-center justify-center h-screen w-full">
       <div>
-        {STRING_NAMES.map((stringName, stringIndex) => 
-          <div key={stringName} className="flex courier">
-            <span className="w-6 text-purple-600 font-bold">{stringName}</span>
-            <span className="w-6">|</span>
-            <div className="flex">
-              {line.strings[stringIndex].split('').map((char, charPosition) => 
-                <input
-                  key={charPosition}
-                  ref={(el) => {
-                    // stores refs as a formatted string
-                    // NOTE: possibly return to this for more efficient handling
-                    const key = getCellKey(
-                      line.id,
-                      stringIndex,
-                      charPosition
-                    )
-                    // check if cell is still in DOM, or delete ref from ref Map object
-                    if(el) {
-                      cellRefs.current.set(key, el)
-                    } else {
-                      cellRefs.current.delete(key)
-                    }
-                  }}
-                  value={char}
-                  className={`
-                    w-5 h-[26px]
-                    bg-transparent
-                    border-none
-                    p-0
-                    text-center
-                    text-sm
-                    font-mono
-                    text-slate-800
-                    cursor-pointer
-                    outline-none
-                    caret-transparent
-                    tab-cell
-                    hover:bg-[#f1f5f9]
-                      ${
-                        activeCell?.lineId === line.id &&
-                        activeCell?.stringIndex === stringIndex &&
-                        activeCell?.position === charPosition
-                          ? 'active'
-                          : ''
+        {lines.map((line, lineIndex) => 
+          <div key={line.id}>
+            {STRING_NAMES.map((stringName, stringIndex) => 
+            <div key={stringName} className="flex courier">
+              <span className="w-6 text-purple-600 font-bold">{stringName}</span>
+              <span className="w-6">|</span>
+              <div className="flex">
+                {line.strings[stringIndex].split('').map((char, charPosition) => 
+                  <input
+                    key={charPosition}
+                    ref={(el) => {
+                      // stores refs as a formatted string
+                      // NOTE: possibly return to this for more efficient handling
+                      const key = getCellKey(
+                        line.id,
+                        stringIndex,
+                        charPosition
+                      )
+                      // check if cell is still in DOM, or delete ref from ref Map object
+                      if(el) {
+                        cellRefs.current.set(key, el)
+                      } else {
+                        cellRefs.current.delete(key)
                       }
+                    }}
+                    value={char}
+                    className={`
+                      w-5 h-[26px]
+                      bg-transparent
+                      border-none
+                      p-0
+                      text-center
+                      text-sm
+                      font-mono
+                      text-slate-800
+                      cursor-pointer
+                      outline-none
+                      caret-transparent
+                      tab-cell
+                      hover:bg-[#f1f5f9]
+                        ${
+                          activeCell?.lineId === line.id &&
+                          activeCell?.stringIndex === stringIndex &&
+                          activeCell?.position === charPosition
+                            ? 'active'
+                            : ''
+                        }
 
-                      ${
-                        activeCell?.lineId === line.id &&
-                        activeCell?.position === charPosition
-                          ? 'column-highlight'
-                          : ''
-                      }
-                    `}
-                  onClick={() => handleCellClick(line.id, stringIndex, charPosition)}
-                  onKeyDown={(e) => handleKeyDown(e, line.id, stringIndex, charPosition)}
-                  onChange={() => {}}
-                />
-              )}
+                        ${
+                          activeCell?.lineId === line.id &&
+                          activeCell?.position === charPosition
+                            ? 'column-highlight'
+                            : ''
+                        }
+                      `}
+                    onClick={() => handleCellClick(line.id, stringIndex, charPosition)}
+                    onKeyDown={(e) => handleKeyDown(e, line.id, stringIndex, charPosition)}
+                    onChange={() => {}}
+                  />
+                )}
+              </div>
+              <span className="w-6">|</span>
             </div>
-            <span className="w-6">|</span>
-          </div>
+          )}
+        </div>
         )}
       </div>
     </main>

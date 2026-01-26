@@ -1,6 +1,6 @@
 import './App.css'
 
-import { useRef, useState } from 'react';
+import { useRef, useState, type KeyboardEvent } from 'react';
 import { type ActiveCell, type TabLine } from "../types/types"
 
 // Standard tuning, to later get handling for alternative tuning/more strings
@@ -10,6 +10,26 @@ const STRING_NAMES = ['e', 'B', 'G', 'D', 'A', 'E'];
 // NOTE: Adjust post-testing for common musical phrase length
 // Set as a uniform value for visual conformity when exporting to pdf
 const DEFAULT_LENGTH = 40;
+
+const TAB_ACTIONS = new Set([
+  'KeyH',
+  'KeyP',
+  'Slash',
+  'Backslash',
+  'KeyB',
+  'KeyR',
+  'KeyX',
+  'Backquote', // ~ (with Shift)
+  'KeyS',
+  'Period',    // > (with Shift)
+  'Digit1',
+  'Digit2',
+  'Digit3',
+  'Digit4',
+  'Digit5',
+  'Backspace',
+  'Delete'
+])
 
 function generateId(): string {
   // getting base-36 string after "0." until the 9th index, nearly impossible to ever collide with previous values
@@ -36,6 +56,10 @@ function App() {
 
   function handleCellClick(lineId: string, stringIndex: number, position: number) {
     setActiveCell({ lineId, stringIndex, position });
+  }
+
+  function handleKeyDown (e: KeyboardEvent, lineId: string, stringIndex: number, position: number){
+    console.log(e.code);
   }
 
   return (
@@ -95,6 +119,8 @@ function App() {
                       }
                     `}
                   onClick={() => handleCellClick(line.id, stringIndex, charPosition)}
+                  onKeyDown={(e) => handleKeyDown(e, line.id, stringIndex, charPosition)}
+                  onChange={() => {}}
                 />
               )}
             </div>

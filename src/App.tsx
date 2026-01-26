@@ -32,12 +32,13 @@ function App() {
   return (
     <main className="">
       {STRING_NAMES.map((stringName, stringIndex) => 
-        <div key={stringName} className="">
-          <span>{stringName}</span>
-          <div>
+        <div key={stringName} className="flex courier">
+          <span className="w-6">{stringName}</span>
+          <div className="flex">
             {line.strings[stringIndex].split('').map((char, charPosition) => 
               <input
                 value={char}
+                className="w-5"
               />
             )}
           </div>

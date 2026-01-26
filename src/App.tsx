@@ -1,6 +1,6 @@
 import './App.css'
 
-import { useRef, useState, type KeyboardEvent } from 'react';
+import { act, useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { type ActiveCell, type TabLine } from "../types/types"
 
 // Standard tuning, to later get handling for alternative tuning/more strings
@@ -49,6 +49,16 @@ function App() {
 
   // Storing refs to each input element for focusing effeciency on later function calls
   const cellRefs = useRef<Map<string, HTMLInputElement>>(new Map());
+
+  useEffect(() => {
+    if(activeCell) {
+      const key = getCellKey(activeCell.lineId, activeCell.stringIndex, activeCell.position)
+      const input = cellRefs.current.get(key);
+      if(input){
+        input.focus();
+      }
+    }
+  }, [activeCell])
 
   function getCellKey(lineId: string, stringIndex: number, position: number): string {
     return `${lineId}-${stringIndex}-${position}`

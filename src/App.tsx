@@ -277,10 +277,13 @@ function App() {
 
   function previewTabs(){
     let output = '';
-    lines.forEach((line) => {
+    lines.forEach((line, lineIndex) => {
       STRING_NAMES.forEach((name, i) => {
-        output += `${name}|${line.strings[i]}\n`
+        output += `${name}|${line.strings[i]}|\n`
       })
+      if (lineIndex < lines.length - 1) {
+        output += '\n';
+      }
     })
     return output;
   }
@@ -370,6 +373,12 @@ function App() {
             className="px-4 py-2 text-sm font-medium rounded-lg border border-[#e85d04] bg-transparent text-[#e85d04] hover:bg-[#e85d04]/10 transition-all cursor-pointer"
           >
             Clear All
+          </button>
+          <button 
+            onClick={() => resetLines()}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-[#e85d04] bg-transparent text-[#e85d04] hover:bg-[#e85d04]/10 transition-all cursor-pointer"
+          >
+            Reset All
           </button>
         </div>
         {lines.map((line, lineIndex) => 

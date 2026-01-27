@@ -76,6 +76,16 @@ function App() {
     setLines((prev) => prev.filter((l) => l.id !== lineId));
   }
 
+  function clearLine(lineId: string){
+    setLines((prev) =>
+      prev.map((line) => {
+        if(line.id !== lineId) return line;
+        const length = line.strings[0].length;
+        return createEmptyLine(length);
+      })
+    )
+  }
+
   function handleCellClick(lineId: string, stringIndex: number, position: number) {
     setActiveCell({ lineId, stringIndex, position });
   }
@@ -253,7 +263,11 @@ function App() {
             <div>
               <h2>Measure {lineIndex + 1}</h2>
               <div className="">
-                <button>Clear</button>
+                <button 
+                  onClick={() => clearLine(line.id)}
+                >
+                  Clear
+                </button>
                 <button
                  onClick={() => deleteLine(line.id)}
                  disabled={lines.length <= 1 ? true : false}

@@ -203,6 +203,10 @@ function App() {
     })
   }
 
+  function resetLines(){
+    setLines([createEmptyLine()]);
+  }
+
   function handleKeyDown (e: KeyboardEvent, lineId: string, stringIndex: number, position: number){
     // non-deprecated keydown value for later keyboard actions handling
 
@@ -287,6 +291,7 @@ function App() {
         <button onClick={() => shortenLines()}>Shorten Measures</button>
         <button onClick={() => addLine()}>Add Measure</button>
         <button onClick={() => clearAll()}>Clear All</button>
+        <button onClick={() => resetLines()}>Reset</button>
       </div>
       <div className="border p-3 rounded-md w-full">
         {lines.map((line, lineIndex) => 

@@ -86,6 +86,11 @@ function App() {
     )
   }
 
+  function clearAll(){
+    const length = lines[0]?.strings[0].length || DEFAULT_LENGTH;
+    setLines([createEmptyLine(length)]);
+  };
+
   function handleCellClick(lineId: string, stringIndex: number, position: number) {
     setActiveCell({ lineId, stringIndex, position });
   }
@@ -255,7 +260,7 @@ function App() {
         <button>Extend Measures</button>
         <button>Shorten Measures</button>
         <button onClick={() => addLine()}>Add Measure</button>
-        <button>Clear All</button>
+        <button onClick={() => clearAll()}>Clear All</button>
       </div>
       <div className="border p-3 rounded-md w-full">
         {lines.map((line, lineIndex) => 

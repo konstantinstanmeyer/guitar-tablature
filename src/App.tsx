@@ -217,12 +217,26 @@ function App() {
     }
   }
 
+  function previewTabs(){
+    let output = '';
+    lines.forEach((line, lineIndex) => {
+      STRING_NAMES.forEach((name, i) => {
+        output += `${name}|${line.strings[i]}\n`
+      })
+    })
+    return output;
+  }
+
   return (
-    <main className="flex items-center justify-center h-screen w-full relative px-24">
+    <main className="flex items-center justify-center h-screen w-full relative px-24 flex-col">
+      <div>
+        <
+        <button onClick={addMeasure}>Add Measure</button>
+      </div>
       <div className="border p-3 rounded-md w-full">
         {lines.map((line, lineIndex) => 
           <div className="courier font-mono max-w-350 overflow-x-scroll" key={line.id}>
-            <h2>Phrase {lineIndex + 1}</h2>
+            <h2>Measure {lineIndex + 1}</h2>
             <div className="overflow-x-scroll">
             {STRING_NAMES.map((stringName, stringIndex) => 
             <div key={stringName} className="flex">
@@ -291,6 +305,7 @@ function App() {
         </div>
         )}
       </div>
+      <pre>{previewTabs()}</pre>
     </main>
   )
 }

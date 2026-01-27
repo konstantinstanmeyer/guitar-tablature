@@ -46,6 +46,7 @@ function createEmptyLine(length: number = DEFAULT_LENGTH): TabLine{
 function App() {
   const [lines, setLines] = useState<TabLine[]>([createEmptyLine()]);
   const [activeCell, setActiveCell] = useState<ActiveCell | null>(null);
+  const [focusedMeasure, setFocusedMeasure] = useState<string | null>(null);
 
   // Storing refs to each input element for focusing effeciency on later function calls
   const cellRefs = useRef<Map<string, HTMLInputElement>>(new Map());
@@ -284,104 +285,208 @@ function App() {
     return output;
   }
 
+  function handleMeasureClick(lineId: string) {
+    setFocusedMeasure(lineId);
+  }
+
   return (
-    <main className="flex items-center justify-center h-screen w-full relative px-24 flex-col">
-      <div>
-        <button onClick={() => extendLines()}>Extend Measures</button>
-        <button onClick={() => shortenLines()}>Shorten Measures</button>
-        <button onClick={() => addLine()}>Add Measure</button>
-        <button onClick={() => clearAll()}>Clear All</button>
-        <button onClick={() => resetLines()}>Reset</button>
-      </div>
-      <div className="border p-3 rounded-md w-full">
+    <div className="min-h-screen bg-[#1a1a1a] p-6">
+      <div className="max-w-[1400px] mx-auto flex flex-col gap-4">
+        <div className="no-print bg-[#242424] border border-[#333333] rounded-xl p-5 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-1 h-7 bg-[#e85d04] rounded-sm"></div>
+            <h1 className="text-xl font-semibold text-[#f5f5f5]">
+              Guitar Tab Editor
+            </h1>
+          </div>
+          <div className="flex gap-3">
+            <button 
+              onClick={() => addLine()}
+              className="px-5 py-2.5 text-sm font-medium rounded-lg border border-[#333333] bg-[#2a2a2a] text-[#f5f5f5] hover:bg-[#333333] transition-all cursor-pointer"
+            >
+              Add Measure
+            </button>
+          </div>
+        </div>
+        <div className="no-print bg-[#242424] border border-[#333333] rounded-xl p-5">
+          <h2 className="text-xs font-semibold text-[#f5f5f5] uppercase tracking-wider mb-4">
+            Quick Reference
+          </h2>
+          <div className="flex flex-col gap-2 text-sm text-[#a0a0a0]">
+            <div className="flex items-center gap-2">
+              <span className="text-[#e85d04]">›</span>
+              <span><strong className="text-[#f5f5f5]">Click</strong> a cell to select it, then type to enter notes</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[#e85d04]">›</span>
+              <span><strong className="text-[#f5f5f5]">Numbers:</strong> 0-9 for frets</span>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[#e85d04]">›</span>
+              <span><strong className="text-[#f5f5f5]">Techniques:</strong></span>
+              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">h</code><span>hammer-on,</span>
+              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">p</code><span>pull-off,</span>
+              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">/</code><span>slide up,</span>
+              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">\</code><span>slide down,</span>
+              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">b</code><span>bend,</span>
+              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">r</code><span>release,</span>
+              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">x</code><span>mute,</span>
+              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">~</code><span>vibrato,</span>
+              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">s</code><span>slap</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[#e85d04]">›</span>
+              <span><strong className="text-[#f5f5f5]">Navigation:</strong> Arrow keys to move, Tab/Shift+Tab to change strings, Enter to advance column</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[#e85d04]">›</span>
+              <span><strong className="text-[#f5f5f5]">Insert:</strong> Press</span>
+              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#f5f5f5] text-xs font-mono border border-[#444444]">Enter</code>
+              <span>to add a column (pushes notes to next line)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[#e85d04]">›</span>
+              <span><strong className="text-[#f5f5f5]">Delete:</strong> Press</span>
+              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#f5f5f5] text-xs font-mono border border-[#444444]">Backspace</code>
+              <span>to clear current cell</span>
+            </div>
+          </div>
+        </div>
+        <div className="no-print bg-[#242424] border border-[#333333] rounded-xl p-4 flex gap-3 flex-wrap">
+          <button 
+            onClick={() => extendLines()}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-[#333333] bg-transparent text-[#a0a0a0] hover:bg-[#2a2a2a] hover:text-[#f5f5f5] transition-all cursor-pointer"
+          >
+            Extend Lines
+          </button>
+          <button 
+            onClick={() => shortenLines()}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-[#333333] bg-transparent text-[#a0a0a0] hover:bg-[#2a2a2a] hover:text-[#f5f5f5] transition-all cursor-pointer"
+          >
+            Shorten Lines
+          </button>
+          <button 
+            onClick={() => clearAll()}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-[#e85d04] bg-transparent text-[#e85d04] hover:bg-[#e85d04]/10 transition-all cursor-pointer"
+          >
+            Clear All
+          </button>
+        </div>
         {lines.map((line, lineIndex) => 
-          <div className="courier font-mono max-w-350 overflow-x-scroll" key={line.id}>
-            <div>
-              <h2>Measure {lineIndex + 1}</h2>
-              <div className="">
+          <div 
+            key={line.id}
+            onClick={() => handleMeasureClick(line.id)}
+            className={`bg-[#242424] rounded-xl p-5 transition-all cursor-pointer ${
+              focusedMeasure === line.id 
+                ? 'border-2 border-[#e85d04]' 
+                : 'border border-[#333333] hover:border-[#444444]'
+            }`}
+          >
+            <div className="flex justify-between items-center mb-4 pb-3 border-b border-[#333333]">
+              <span className="text-xs font-semibold text-[#a0a0a0] uppercase tracking-wider">
+                Measure {lineIndex + 1}
+              </span>
+              <div className="no-print flex gap-2">
                 <button 
-                  onClick={() => clearLine(line.id)}
+                  onClick={(e) => { e.stopPropagation(); clearLine(line.id); }}
+                  className="px-4 py-1.5 text-xs font-medium rounded-lg border border-[#e85d04] bg-transparent text-[#e85d04] hover:bg-[#e85d04]/10 transition-all cursor-pointer"
                 >
                   Clear
                 </button>
                 <button
-                 onClick={() => deleteLine(line.id)}
-                 disabled={lines.length <= 1 ? true : false}
+                  onClick={(e) => { e.stopPropagation(); deleteLine(line.id); }}
+                  disabled={lines.length <= 1}
+                  className="px-4 py-1.5 text-xs font-medium rounded-lg border border-[#444444] bg-transparent text-[#666666] hover:bg-[#333333] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                 >
                   Delete
                 </button>
               </div>
             </div>
-            <div className="overflow-x-scroll">
-            {STRING_NAMES.map((stringName, stringIndex) => 
-            <div key={stringName} className="flex">
-              <span className="w-6 text-purple-600 font-bold mr-2 text-center">{stringName}</span>
-              <span className="w-6 m-0 text-center">|</span>
-              <div className="flex">
-                {line.strings[stringIndex].split('').map((char, charPosition) => 
-                  <input
-                    key={charPosition}
-                    ref={(el) => {
-                      // stores refs as a formatted string
-                      // NOTE: possibly return to this for more efficient handling
-                      const key = getCellKey(
-                        line.id,
-                        stringIndex,
-                        charPosition
-                      )
-                      // check if cell is still in DOM, or delete ref from ref Map object
-                      if(el) {
-                        cellRefs.current.set(key, el)
-                      } else {
-                        cellRefs.current.delete(key)
-                      }
-                    }}
-                    value={char}
-                    className={`
-                      w-5 h-[26px]
-                      bg-transparent
-                      border-none
-                      p-0
-                      text-center
-                      text-xs
-                      font-mono
-                      text-slate-800
-                      cursor-pointer
-                      outline-none
-                      caret-transparent
-                      tab-cell
-                      hover:bg-[#f1f5f9]
-                      font-light!
-                      ${
-                        activeCell?.lineId === line.id &&
-                        activeCell?.stringIndex === stringIndex &&
-                        activeCell?.position === charPosition
-                          ? 'active'
-                          : ''
-                      }
-
-                      ${
-                        activeCell?.lineId === line.id &&
-                        activeCell?.position === charPosition
-                          ? 'column-highlight'
-                          : ''
-                      }
-                      `}
-                    onClick={() => handleCellClick(line.id, stringIndex, charPosition)}
-                    onKeyDown={(e) => handleKeyDown(e, line.id, stringIndex, charPosition)}
-                    onChange={() => {}}
-                  />
-                )}
-              </div>
-              <span className="w-6">|</span>
+            <div className="flex items-center mb-1 ml-[52px]">
+              {line.strings[0].split('').map((_, position) => (
+                <span 
+                  key={position}
+                  className="w-5 text-[10px] text-[#666666] text-center font-mono"
+                >
+                  {position % 5 === 0 ? position : ''}
+                </span>
+              ))}
             </div>
-          )}
+            <div className="tab-grid overflow-x-auto pb-2">
+              {STRING_NAMES.map((stringName, stringIndex) => 
+                <div key={stringName} className="flex items-center h-[26px]">
+                  <span 
+                    className="w-6 text-[13px] font-medium text-[#a0a0a0] text-center shrink-0"
+                    style={{ fontFamily: 'var(--font-mono)' }}
+                  >
+                    {stringName}
+                  </span>
+                  <span 
+                    className="w-6 text-sm font-normal text-[#666666] text-center shrink-0"
+                    style={{ fontFamily: 'var(--font-mono)' }}
+                  >
+                    |
+                  </span>
+                  <div className="flex">
+                    {line.strings[stringIndex].split('').map((char, charPosition) => 
+                      <input
+                        key={charPosition}
+                        ref={(el) => {
+                          const key = getCellKey(
+                            line.id,
+                            stringIndex,
+                            charPosition
+                          )
+                          if(el) {
+                            cellRefs.current.set(key, el)
+                          } else {
+                            cellRefs.current.delete(key)
+                          }
+                        }}
+                        value={char}
+                        className={`tab-cell courier ${
+                          activeCell?.lineId === line.id &&
+                          activeCell?.stringIndex === stringIndex &&
+                          activeCell?.position === charPosition
+                            ? ' active'
+                            : ''
+                        }${
+                          activeCell?.lineId === line.id &&
+                          activeCell?.position === charPosition
+                            ? ' column-highlight'
+                            : ''
+                        }`}
+                        onClick={(e) => { e.stopPropagation(); handleCellClick(line.id, stringIndex, charPosition); }}
+                        onKeyDown={(e) => handleKeyDown(e, line.id, stringIndex, charPosition)}
+                        onChange={() => {}}
+                      />
+                    )}
+                  </div>
+                  <span 
+                    className="w-6 text-sm font-normal text-[#666666] text-center"
+                    style={{ fontFamily: 'var(--font-mono)' }}
+                  >
+                    |
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
         )}
+        <div className="no-print bg-[#242424] border border-[#333333] rounded-xl p-5">
+          <h3 className="text-xs font-semibold text-[#f5f5f5] uppercase tracking-wider mb-4">
+            Preview
+          </h3>
+          <pre 
+            className="bg-[#1a1a1a] text-[#a0a0a0] py-5 px-6 rounded-lg text-[13px] leading-[1.4] overflow-x-auto whitespace-pre m-0 border border-[#333333]"
+            style={{ fontFamily: 'var(--font-mono)' }}
+          >
+            {previewTabs()}
+          </pre>
+        </div>
+
       </div>
-      <pre>{previewTabs()}</pre>
-    </main>
+    </div>
   )
 }
 

@@ -1,24 +1,72 @@
 @import "tailwindcss";
 
+html {
+  background-color: black;
+}
+
 .courier {
   font-family: 'Courier New', monospace;
 }
 
+.tab-cell {
+  width: 22px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  padding: 0;
+  color: #f5f5f5;
+  cursor: pointer;
+  outline: none;
+  caret-color: transparent;
+  border-radius: 2px;
+}
+
+.tab-cell:hover {
+  background: #1a1a1a;
+}
+
 .tab-cell.column-highlight {
-  background: #f5f3ff;
+  background: #414141;
 }
 
 .tab-cell.active {
-  background: #7c3aed;
+  background: #e85d04;
   color: white;
   border-radius: 4px;
+  box-shadow: 0 0 8px rgba(232, 93, 4, 0.15);
 }
 
 .tab-cell:focus {
-  background: #ede9fe;
+  background: rgba(232, 93, 4, 0.1);
 }
 
 .tab-cell.active:focus {
-  background: #7c3aed;
+  background: #e85d04;
   color: white;
+}
+
+.tab-grid::-webkit-scrollbar,
+pre::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tab-grid::-webkit-scrollbar-track,
+pre::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 3px;
+}
+
+.tab-grid::-webkit-scrollbar-thumb,
+pre::-webkit-scrollbar-thumb {
+  background: #333333;
+  border-radius: 3px;
+}
+
+.tab-grid::-webkit-scrollbar-thumb:hover,
+pre::-webkit-scrollbar-thumb:hover {
+  background: #666666;
 }

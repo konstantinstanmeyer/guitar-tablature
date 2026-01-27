@@ -11,25 +11,25 @@ const STRING_NAMES = ['e', 'B', 'G', 'D', 'A', 'E'];
 // Set as a uniform value for visual conformity when exporting to pdf
 const DEFAULT_LENGTH = 40;
 
-const TAB_ACTIONS = new Set([
-  'KeyH',
-  'KeyP',
-  'Slash',
-  'Backslash',
-  'KeyB',
-  'KeyR',
-  'KeyX',
-  'Backquote', // ~ (with Shift)
-  'KeyS',
-  'Period',    // > (with Shift)
-  'Digit1',
-  'Digit2',
-  'Digit3',
-  'Digit4',
-  'Digit5',
-  'Backspace',
-  'Delete'
-])
+// const TAB_ACTIONS = new Set([
+//   'KeyH',
+//   'KeyP',
+//   'Slash',
+//   'Backslash',
+//   'KeyB',
+//   'KeyR',
+//   'KeyX',
+//   'Backquote', // ~ (with Shift)
+//   'KeyS',
+//   'Period',    // > (with Shift)
+//   'Digit1',
+//   'Digit2',
+//   'Digit3',
+//   'Digit4',
+//   'Digit5',
+//   'Backspace',
+//   'Delete'
+// ])
 
 function generateId(): string {
   // getting base-36 string after "0." until the 9th index, nearly impossible to ever collide with previous values
@@ -292,6 +292,64 @@ function App() {
     setFocusedMeasure(lineId);
   }
 
+  async function exportToPdf () {
+    try {
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Guitar Tabs</title>
+            <style>
+              body {
+                font-family: 'Courier New', monospace;
+                padding: 40px;
+                font-size: 12px;
+                line-height: 1.4;
+              }
+              h1 {
+                font-family: Arial, sans-serif;
+                font-size: 24px;
+                margin-bottom: 30px;
+              }
+              .tab-section {
+                margin-bottom: 30px;
+                page-break-inside: avoid;
+              }
+              .string-line {
+                margin: 0;
+                white-space: pre;
+              }
+              @media print {
+                body { padding: 20px; }
+              }
+            </style>
+          </head>
+          <body>
+            <h1>Guitar Tablature</h1>
+            ${lines
+              .map(
+                (line) => `
+              <div class="tab-section">
+                ${STRING_NAMES.map(
+                  (name, i) =>
+                    `<div class="string-line">${name}|${line.strings[i]}|</div>`
+                ).join('')}
+              </div>
+            `
+              )
+              .join('')}
+          </body>
+          </html>
+        `);
+        printWindow.document.close();
+      }
+    } catch (e:unknown) {
+      console.log(e as Error)
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#1a1a1a] p-6">
       <div className="max-w-[1400px] mx-auto flex flex-col gap-4">
@@ -308,6 +366,12 @@ function App() {
               className="px-5 py-2.5 text-sm font-medium rounded-lg border border-[#333333] bg-[#2a2a2a] text-[#f5f5f5] hover:bg-[#333333] transition-all cursor-pointer"
             >
               Add Measure
+            </button>
+            <button 
+              onClick={() => exportToPdf()}
+              className="px-5 py-2.5 text-sm font-medium rounded-lg border border-[#333333] bg-[#2a2a2a] text-[#f5f5f5] hover:bg-[#333333] transition-all cursor-pointer"
+            >
+              Export
             </button>
           </div>
         </div>

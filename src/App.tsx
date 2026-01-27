@@ -178,11 +178,25 @@ function App() {
 
   function extendLines (){
     setLines(prev => {
-      return prev.map((line, index) => {
+      return prev.map((line) => {
         return {
           ...line,
           strings: line.strings.map((str) => {
             return str += "-----"
+          })
+        }
+      })
+    })
+  }
+
+  function shortenLines(){
+    const length = lines[0].strings[0].length;
+    setLines (prev => {
+      return prev.map((line) => {
+        return {
+          ...line,
+          strings: line.strings.map((str) => {
+            return str.slice(0,length - 5);
           })
         }
       })
@@ -258,7 +272,7 @@ function App() {
 
   function previewTabs(){
     let output = '';
-    lines.forEach((line, lineIndex) => {
+    lines.forEach((line) => {
       STRING_NAMES.forEach((name, i) => {
         output += `${name}|${line.strings[i]}\n`
       })
@@ -270,7 +284,7 @@ function App() {
     <main className="flex items-center justify-center h-screen w-full relative px-24 flex-col">
       <div>
         <button onClick={() => extendLines()}>Extend Measures</button>
-        <button>Shorten Measures</button>
+        <button onClick={() => shortenLines()}>Shorten Measures</button>
         <button onClick={() => addLine()}>Add Measure</button>
         <button onClick={() => clearAll()}>Clear All</button>
       </div>

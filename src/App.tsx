@@ -1,6 +1,6 @@
 import './App.css'
 
-import { act, useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { type ActiveCell, type TabLine } from "../types/types"
 
 // Standard tuning, to later get handling for alternative tuning/more strings
@@ -191,7 +191,14 @@ function App() {
           position: 0,
         });
       }
-    } 
+    } else if (key === 'Tab') {
+      e.preventDefault();
+      if (e.shiftKey) {
+        moveToPrevString(lineId, stringIndex, position);
+      } else {
+        moveToNextString(lineId, stringIndex, position);
+      }
+    }
 
     // Editing
     else if(key === 'Enter') {
@@ -216,8 +223,8 @@ function App() {
             <div className="overflow-x-scroll">
             {STRING_NAMES.map((stringName, stringIndex) => 
             <div key={stringName} className="flex">
-              <span className="w-6 text-purple-600 font-bold">{stringName}</span>
-              <span className="w-6 m-0">|</span>
+              <span className="w-6 text-purple-600 font-bold mr-2 text-center">{stringName}</span>
+              <span className="w-6 m-0 text-center">|</span>
               <div className="flex">
                 {line.strings[stringIndex].split('').map((char, charPosition) => 
                   <input
@@ -253,20 +260,20 @@ function App() {
                       tab-cell
                       hover:bg-[#f1f5f9]
                       font-light!
-                        ${
-                          activeCell?.lineId === line.id &&
-                          activeCell?.stringIndex === stringIndex &&
-                          activeCell?.position === charPosition
-                            ? 'active'
-                            : ''
-                        }
+                      ${
+                        activeCell?.lineId === line.id &&
+                        activeCell?.stringIndex === stringIndex &&
+                        activeCell?.position === charPosition
+                          ? 'active'
+                          : ''
+                      }
 
-                        ${
-                          activeCell?.lineId === line.id &&
-                          activeCell?.position === charPosition
-                            ? 'column-highlight'
-                            : ''
-                        }
+                      ${
+                        activeCell?.lineId === line.id &&
+                        activeCell?.position === charPosition
+                          ? 'column-highlight'
+                          : ''
+                      }
                       `}
                     onClick={() => handleCellClick(line.id, stringIndex, charPosition)}
                     onKeyDown={(e) => handleKeyDown(e, line.id, stringIndex, charPosition)}

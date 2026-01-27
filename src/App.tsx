@@ -230,13 +230,21 @@ function App() {
   return (
     <main className="flex items-center justify-center h-screen w-full relative px-24 flex-col">
       <div>
-        <
-        <button onClick={addMeasure}>Add Measure</button>
+        <button>Extend Measures</button>
+        <button>Shorten Measures</button>
+        <button>Add Measure</button>
+        <button>Clear All</button>
       </div>
       <div className="border p-3 rounded-md w-full">
         {lines.map((line, lineIndex) => 
           <div className="courier font-mono max-w-350 overflow-x-scroll" key={line.id}>
-            <h2>Measure {lineIndex + 1}</h2>
+            <div>
+              <h2>Measure {lineIndex + 1}</h2>
+              <div className="">
+                <button>Clear</button>
+                <button>Delete</button>
+              </div>
+            </div>
             <div className="overflow-x-scroll">
             {STRING_NAMES.map((stringName, stringIndex) => 
             <div key={stringName} className="flex">

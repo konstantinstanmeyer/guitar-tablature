@@ -152,9 +152,9 @@ function App() {
 
   function handleKeyDown (e: KeyboardEvent, lineId: string, stringIndex: number, position: number){
     // non-deprecated keydown value for later keyboard actions handling
-    const code = e.code;
 
     const key = e.key;
+    console.log(key)
     const line = lines.find(l => l.id === lineId);
     if(!line) return;
 
@@ -204,13 +204,16 @@ function App() {
     else if(key === 'Enter') {
       e.preventDefault();
       insertColumnAt(lineId, position);
+    } else if(key === 'Backspace') {
+      e.preventDefault();
+      updateString(lineId, stringIndex, position, "-");
     }
 
     // String input
     else if (/^[0-9hpbr\/\\x~()|s]$/.test(key) || key === '-') {
       e.preventDefault();
       updateString(lineId, stringIndex, position, key);
-      moveToNextString(lineId, stringIndex, position);
+      // moveToNextString(lineId, stringIndex, position);
     }
   }
 

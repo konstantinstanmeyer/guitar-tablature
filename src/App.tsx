@@ -64,6 +64,12 @@ function App() {
     return `${lineId}-${stringIndex}-${position}`
   }
 
+  function addLine(){
+    const lastLine = lines[lines.length - 1];
+    const length = lastLine ? lastLine.strings[0].length : DEFAULT_LENGTH;
+    setLines((prev) => [...prev,createEmptyLine(length)]) ;
+  }
+
   function handleCellClick(lineId: string, stringIndex: number, position: number) {
     setActiveCell({ lineId, stringIndex, position });
   }
@@ -232,7 +238,7 @@ function App() {
       <div>
         <button>Extend Measures</button>
         <button>Shorten Measures</button>
-        <button>Add Measure</button>
+        <button onClick={() => addLine()}>Add Measure</button>
         <button>Clear All</button>
       </div>
       <div className="border p-3 rounded-md w-full">

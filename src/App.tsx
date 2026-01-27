@@ -87,8 +87,7 @@ function App() {
   }
 
   function clearAll(){
-    const length = lines[0]?.strings[0].length || DEFAULT_LENGTH;
-    setLines([createEmptyLine(length)]);
+    setLines((prev) => prev.map((line) => createEmptyLine(line.strings[0].length)));
   };
 
   function handleCellClick(lineId: string, stringIndex: number, position: number) {
@@ -177,6 +176,19 @@ function App() {
     });
   };
 
+  function extendLines (){
+    setLines(prev => {
+      return prev.map((line, index) => {
+        return {
+          ...line,
+          strings: line.strings.map((str) => {
+            return str += "-----"
+          })
+        }
+      })
+    })
+  }
+
   function handleKeyDown (e: KeyboardEvent, lineId: string, stringIndex: number, position: number){
     // non-deprecated keydown value for later keyboard actions handling
 
@@ -257,7 +269,7 @@ function App() {
   return (
     <main className="flex items-center justify-center h-screen w-full relative px-24 flex-col">
       <div>
-        <button>Extend Measures</button>
+        <button onClick={() => extendLines()}>Extend Measures</button>
         <button>Shorten Measures</button>
         <button onClick={() => addLine()}>Add Measure</button>
         <button onClick={() => clearAll()}>Clear All</button>

@@ -70,6 +70,12 @@ function App() {
     setLines((prev) => [...prev,createEmptyLine(length)]) ;
   }
 
+  function deleteLine(lineId: string){
+    // NOTE: nearly-impossible edge-case, maybe not needed due to buttons being disabled on equal params
+    if(lines.length <= 1) return;
+    setLines((prev) => prev.filter((l) => l.id !== lineId));
+  }
+
   function handleCellClick(lineId: string, stringIndex: number, position: number) {
     setActiveCell({ lineId, stringIndex, position });
   }
@@ -248,7 +254,7 @@ function App() {
               <h2>Measure {lineIndex + 1}</h2>
               <div className="">
                 <button>Clear</button>
-                <button>Delete</button>
+                <button onClick={() => deleteLine(line.id)}>Delete</button>
               </div>
             </div>
             <div className="overflow-x-scroll">

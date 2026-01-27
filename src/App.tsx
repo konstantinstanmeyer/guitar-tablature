@@ -411,16 +411,6 @@ function App() {
                 </button>
               </div>
             </div>
-            <div className="flex items-center mb-1 ml-[52px]">
-              {line.strings[0].split('').map((_, position) => (
-                <span 
-                  key={position}
-                  className="w-5 text-[10px] text-[#666666] text-center font-mono"
-                >
-                  {position % 5 === 0 ? position : ''}
-                </span>
-              ))}
-            </div>
             <div className="tab-grid overflow-x-auto pb-2">
               {STRING_NAMES.map((stringName, stringIndex) => 
                 <div key={stringName} className="flex items-center h-[26px]">

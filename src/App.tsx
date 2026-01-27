@@ -254,7 +254,12 @@ function App() {
               <h2>Measure {lineIndex + 1}</h2>
               <div className="">
                 <button>Clear</button>
-                <button onClick={() => deleteLine(line.id)}>Delete</button>
+                <button
+                 onClick={() => deleteLine(line.id)}
+                 disabled={lines.length <= 1 ? true : false}
+                >
+                  Delete
+                </button>
               </div>
             </div>
             <div className="overflow-x-scroll">

@@ -452,7 +452,9 @@ function App() {
               <span className="text-[#e85d04]">›</span>
               <span><strong className="text-[#f5f5f5]">Delete:</strong> Press</span>
               <code className="px-2 py-0.5 bg-[#333333] rounded text-[#f5f5f5] text-xs font-mono border border-[#444444]">Backspace</code>
-              <span>to clear current cell</span>
+              <span>to clear current cell,</span>
+              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#f5f5f5] text-xs font-mono border border-[#444444]">`</code>
+              <span>to delete numbers on selected column</span>
             </div>
           </div>
         </div>

@@ -133,7 +133,7 @@ function App() {
     }
   }
 
-  function updateString (lineId: string, stringIndex: number, position: number, value: string) {
+  function updateCell (lineId: string, stringIndex: number, position: number, value: string) {
     setLines((prev) =>
       prev.map((line) => {
         if (line.id !== lineId) return line;
@@ -177,6 +177,7 @@ function App() {
     });
   };
 
+  // delete all numbers on the selected column, pushing a new, empty column to the end of each string-line to maintain measure length
   function deleteColumnAt (lineId:string, position: number) {
    setLines((prev) => {
       const lineIndex = prev.findIndex((l) => l.id === lineId);
@@ -185,7 +186,6 @@ function App() {
       return prev.map((line, index) => {
         console.log("Current column")
         if (index === lineIndex) {
-          // Insert new column at the next column index
           console.log(position)
           return {
             ...line,
@@ -198,15 +198,6 @@ function App() {
         } else {
           return line;
         }
-        
-        // else {
-        //   // Extend other lines by adding a dash at the end maintaining consistend line lenghts
-        //   // appending to the end of their strings to not interrupt tab behavior
-        //   return {
-        //     ...line,
-        //     strings: line.strings.map((str) => str.slice(0, str.length - 1)),
-        //   };
-        // }
       });
     });
   }
@@ -298,7 +289,7 @@ function App() {
       insertColumnAt(lineId, position);
     } else if(key === 'Backspace') {
       e.preventDefault();
-      updateString(lineId, stringIndex, position, "-");
+      updateCell(lineId, stringIndex, position, "-");
     } else if(key === "`") {
       e.preventDefault();
       deleteColumnAt(lineId, position)
@@ -307,7 +298,7 @@ function App() {
     // String input
     else if (/^[0-9hpbr\/\\x~()|s]$/.test(key) || key === '-') {
       e.preventDefault();
-      updateString(lineId, stringIndex, position, key);
+      updateCell(lineId, stringIndex, position, key);
       // moveToNextString(lineId, stringIndex, position);
     }
   }

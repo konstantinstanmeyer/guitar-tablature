@@ -177,6 +177,35 @@ function App() {
     });
   };
 
+  function deleteColumnAt (lineId:string, position: number) {
+   setLines((prev) => {
+      const lineIndex = prev.findIndex((l) => l.id === lineId);
+      if (lineIndex === -1) return prev;
+
+      return prev.map((line, index) => {
+        console.log("Current column")
+        if (index === lineIndex) {
+          // Insert new column at the next column index
+          return {
+            ...line,
+            strings: line.strings.map((str) => {
+              const before = str.slice(0, position);
+              const after = str.slice(position + 1);
+              return before + after;
+            }),
+          };
+        } else {
+          // Extend other lines by adding a dash at the end maintaining consistend line lenghts
+          // appending to the end of their strings to not interrupt tab behavior
+          return {
+            ...line,
+            strings: line.strings.map((str) => str.slice(0, str.length - 1)),
+          };
+        }
+      });
+    });
+  }
+
   function extendLines (){
     setLines(prev => {
       return prev.map((line) => {
@@ -265,6 +294,9 @@ function App() {
     } else if(key === 'Backspace') {
       e.preventDefault();
       updateString(lineId, stringIndex, position, "-");
+    } else if(key === "`") {
+      e.preventDefault();
+      deleteColumnAt(lineId, stringIndex)
     }
 
     // String input

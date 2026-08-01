@@ -1,13 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300&family=Indie+Flower&display=swap');
 @import "tailwindcss";
 
-html {
-  background-color: black;
+/* Design tokens --- exposed to Tailwind as bg-paper, text-ink, font-mono, etc. */
+@theme {
+  --color-paper: #fcfbf8;      /* the single sheet --- whole page */
+  --color-ink: #1c1b18;        /* primary text / inked cells */
+  --color-ink-soft: #55534d;   /* body copy */
+  --color-ink-faint: #9b988f;  /* labels, string names, muted */
+  --color-line: #e8e6df;       /* hairline rules */
+  --color-line-strong: #d6d3ca;
+  --color-hover: #f2f0ea;      /* subtle fill on hover */
+  --color-highlight: #edeae1;  /* column highlight band */
+  --color-danger: #9a4436;     /* restrained brick red */
+
+  --font-serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --font-mono: 'Courier Prime', 'Courier New', ui-monospace, monospace;
 }
 
-.courier {
-  font-family: 'Courier New', monospace;
+.test {
+  font-family: 'Indie Flower', cursive !important;
 }
 
+html, body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tab cell: applied to every character input (hundreds of them) with
+   conditional .active / .column-highlight states --- a component class is
+   the sensible home for this rather than repeating long utility strings. */
 .tab-cell {
   width: 22px;
   height: 26px;
@@ -15,58 +39,26 @@ html {
   background: transparent;
   font-family: var(--font-mono);
   font-size: 14px;
-  font-weight: 500;
   text-align: center;
   padding: 0;
-  color: #f5f5f5;
+  color: var(--color-ink);
   cursor: pointer;
   outline: none;
   caret-color: transparent;
   border-radius: 2px;
 }
+.tab-cell:hover { background: var(--color-hover); }
+.tab-cell:focus { background: rgba(28, 27, 24, 0.06); }
+.tab-cell.column-highlight { background: var(--color-highlight); }
+.tab-cell.active,
+.tab-cell.active:focus { background: var(--color-ink); color: var(--color-paper); }
 
-.tab-cell:hover {
-  background: #1a1a1a;
-}
+/* Thin, unobtrusive scrollbars for the tab lines + preview */
+.tab-scroll::-webkit-scrollbar { height: 8px; }
+.tab-scroll::-webkit-scrollbar-track { background: transparent; }
+.tab-scroll::-webkit-scrollbar-thumb { background: var(--color-line-strong); border-radius: 4px; }
+.tab-scroll::-webkit-scrollbar-thumb:hover { background: var(--color-ink-faint); }
 
-.tab-cell.column-highlight {
-  background: #414141;
-}
-
-.tab-cell.active {
-  background: #e85d04;
-  color: white;
-  border-radius: 4px;
-  box-shadow: 0 0 8px rgba(232, 93, 4, 0.15);
-}
-
-.tab-cell:focus {
-  background: rgba(232, 93, 4, 0.1);
-}
-
-.tab-cell.active:focus {
-  background: #e85d04;
-  color: white;
-}
-
-.tab-grid::-webkit-scrollbar,
-pre::-webkit-scrollbar {
-  height: 6px;
-}
-
-.tab-grid::-webkit-scrollbar-track,
-pre::-webkit-scrollbar-track {
-  background: #1a1a1a;
-  border-radius: 3px;
-}
-
-.tab-grid::-webkit-scrollbar-thumb,
-pre::-webkit-scrollbar-thumb {
-  background: #333333;
-  border-radius: 3px;
-}
-
-.tab-grid::-webkit-scrollbar-thumb:hover,
-pre::-webkit-scrollbar-thumb:hover {
-  background: #666666;
+@media print {
+  .no-print { display: none !important; }
 }

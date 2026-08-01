@@ -11,28 +11,7 @@ const STRING_NAMES = ['e', 'B', 'G', 'D', 'A', 'E'];
 // Set as a uniform value for visual conformity when exporting to pdf
 const DEFAULT_LENGTH = 40;
 
-// const TAB_ACTIONS = new Set([
-//   'KeyH',
-//   'KeyP',
-//   'Slash',
-//   'Backslash',
-//   'KeyB',
-//   'KeyR',
-//   'KeyX',
-//   'Backquote', // ~ (with Shift)
-//   'KeyS',
-//   'Period',    // > (with Shift)
-//   'Digit1',
-//   'Digit2',
-//   'Digit3',
-//   'Digit4',
-//   'Digit5',
-//   'Backspace',
-//   'Delete'
-// ])
-
 function generateId(): string {
-  // getting base-36 string after "0." until the 9th index, nearly impossible to ever collide with previous values
   return Math.random().toString(36).substring(2,9);
 }
 
@@ -47,8 +26,8 @@ function App() {
   const [lines, setLines] = useState<TabLine[]>([createEmptyLine()]);
   const [activeCell, setActiveCell] = useState<ActiveCell | null>(null);
   const [focusedMeasure, setFocusedMeasure] = useState<string | null>(null);
+  const [showReference, setShowReference] = useState(false);
 
-  // Storing refs to each input element for focusing effeciency on later function calls
   const cellRefs = useRef<Map<string, HTMLInputElement>>(new Map());
 
   useEffect(() => {
@@ -72,7 +51,6 @@ function App() {
   }
 
   function deleteLine(lineId: string){
-    // NOTE: nearly-impossible edge-case, maybe not needed due to buttons being disabled on equal params
     if(lines.length <= 1) return;
     setLines((prev) => prev.filter((l) => l.id !== lineId));
   }
@@ -156,7 +134,6 @@ function App() {
 
       return prev.map((line, index) => {
         if (index === lineIndex) {
-          // Insert new column at the next column index
           return {
             ...line,
             strings: line.strings.map((str) => {
@@ -166,8 +143,6 @@ function App() {
             }),
           };
         } else {
-          // Extend other lines by adding a dash at the end maintaining consistend line lenghts
-          // appending to the end of their strings to not interrupt tab behavior
           return {
             ...line,
             strings: line.strings.map((str) => str + '-'),
@@ -177,16 +152,13 @@ function App() {
     });
   };
 
-  // delete all numbers on the selected column, pushing a new, empty column to the end of each string-line to maintain measure length
   function deleteColumnAt (lineId:string, position: number) {
    setLines((prev) => {
       const lineIndex = prev.findIndex((l) => l.id === lineId);
       if (lineIndex === -1) return prev;
 
       return prev.map((line, index) => {
-        console.log("Current column")
         if (index === lineIndex) {
-          console.log(position)
           return {
             ...line,
             strings: line.strings.map((str) => {
@@ -234,17 +206,13 @@ function App() {
   }
 
   function handleKeyDown (e: KeyboardEvent, lineId: string, stringIndex: number, position: number){
-    // non-deprecated keydown value for later keyboard actions handling
-
     const key = e.key;
-    console.log(key)
     const line = lines.find(l => l.id === lineId);
     if(!line) return;
 
     const lineLength = line.strings[0].length;
     const lineIndex = lines.findIndex((l) => l.id === lineId);
-    
-    // Navigation
+
     if(key === 'ArrowUp'){
       e.preventDefault();
       moveToPrevString(lineId, stringIndex, position)
@@ -282,8 +250,6 @@ function App() {
         moveToNextString(lineId, stringIndex, position);
       }
     }
-
-    // Editing
     else if(key === 'Enter') {
       e.preventDefault();
       insertColumnAt(lineId, position);
@@ -294,12 +260,9 @@ function App() {
       e.preventDefault();
       deleteColumnAt(lineId, position)
     }
-
-    // String input
     else if (/^[0-9hpbr\/\\x~()|s]$/.test(key) || key === '-') {
       e.preventDefault();
       updateCell(lineId, stringIndex, position, key);
-      // moveToNextString(lineId, stringIndex, position);
     }
   }
 
@@ -329,29 +292,27 @@ function App() {
           <html>
           <head>
             <title>Guitar Tabs</title>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Newsreader:opsz,wght@6..72,400&display=swap" rel="stylesheet">
             <style>
               body {
-                font-family: 'Courier New', monospace;
-                padding: 40px;
-                font-size: 12px;
-                line-height: 1.4;
+                font-family: 'Courier Prime', 'Courier New', monospace;
+                color: #1c1b18;
+                padding: 48px;
+                font-size: 13px;
+                line-height: 1.5;
+                background: #ffffff;
               }
               h1 {
-                font-family: Arial, sans-serif;
-                font-size: 24px;
-                margin-bottom: 30px;
+                font-family: 'Newsreader', Georgia, serif;
+                font-weight: 400;
+                font-size: 26px;
+                margin: 0 0 32px;
+                letter-spacing: 0.01em;
               }
-              .tab-section {
-                margin-bottom: 30px;
-                page-break-inside: avoid;
-              }
-              .string-line {
-                margin: 0;
-                white-space: pre;
-              }
-              @media print {
-                body { padding: 20px; }
-              }
+              .tab-section { margin-bottom: 28px; page-break-inside: avoid; }
+              .string-line { margin: 0; white-space: pre; }
+              @media print { body { padding: 24px; } }
             </style>
           </head>
           <body>
@@ -378,158 +339,119 @@ function App() {
     }
   };
 
+  const eyebrow = "font-mono text-[0.66rem] font-bold tracking-[0.2em] uppercase text-ink-faint";
+  const btn = "font-mono text-[0.68rem] tracking-[0.14em] uppercase text-ink-faint hover:text-ink transition-colors cursor-pointer disabled:opacity-30 disabled:hover:text-ink-faint disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-1 focus-visible:outline-ink focus-visible:outline-offset-2";
+
   return (
-    <div className="min-h-screen bg-[#1a1a1a] p-6">
-      <div className="max-w-[1400px] mx-auto flex flex-col gap-4">
-        <div className="no-print bg-[#242424] border border-[#333333] rounded-xl p-5 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-1 h-7 bg-[#e85d04] rounded-sm"></div>
-            <h1 className="text-xl font-semibold text-[#f5f5f5]">
-              Guitar Tab Editor
-            </h1>
+    <div className="min-h-screen bg-paper text-ink">
+      <div className="max-w-[1120px] mx-auto px-8 py-14">
+
+        {/* Masthead */}
+        <header className="no-print flex justify-between items-end gap-6 flex-wrap pb-5 border-b border-line">
+          <div>
+            <h1 className="font-serif text-[2rem] leading-none">Guitar Tab Editor</h1>
+            <p className="mt-2 font-mono text-[0.68rem] tracking-[0.22em] uppercase text-ink-faint">Tablature Worksheet</p>
           </div>
-          <div className="flex gap-3">
-            <button 
-              onClick={() => addLine()}
-              className="px-5 py-2.5 text-sm font-medium rounded-lg border border-[#333333] bg-[#2a2a2a] text-[#f5f5f5] hover:bg-[#333333] transition-all cursor-pointer"
-            >
-              Add Measure
-            </button>
-            <button 
-              onClick={() => exportToPdf()}
-              className="px-5 py-2.5 text-sm font-medium rounded-lg border border-[#333333] bg-[#2a2a2a] text-[#f5f5f5] hover:bg-[#333333] transition-all cursor-pointer"
-            >
-              Export
-            </button>
+          <div className="flex gap-6">
+            <button className={`${btn} text-ink`} onClick={() => addLine()}>Add measure</button>
+            <button className={btn} onClick={() => exportToPdf()}>Export</button>
           </div>
-        </div>
-        <div className="no-print bg-[#242424] border border-[#333333] rounded-xl p-5">
-          <h2 className="text-xs font-semibold text-[#f5f5f5] uppercase tracking-wider mb-4">
-            Quick Reference
-          </h2>
-          <div className="flex flex-col gap-2 text-sm text-[#a0a0a0]">
-            <div className="flex items-center gap-2">
-              <span className="text-[#e85d04]">›</span>
-              <span><strong className="text-[#f5f5f5]">Click</strong> a cell to select it, then type to enter notes</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[#e85d04]">›</span>
-              <span><strong className="text-[#f5f5f5]">Numbers:</strong> 0-9 for frets</span>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[#e85d04]">›</span>
-              <span><strong className="text-[#f5f5f5]">Techniques:</strong></span>
-              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">h</code><span>hammer-on,</span>
-              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">p</code><span>pull-off,</span>
-              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">/</code><span>slide up,</span>
-              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">\</code><span>slide down,</span>
-              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">b</code><span>bend,</span>
-              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">r</code><span>release,</span>
-              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">x</code><span>mute,</span>
-              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">~</code><span>vibrato,</span>
-              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#e85d04] text-xs font-mono">s</code><span>slap</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[#e85d04]">›</span>
-              <span><strong className="text-[#f5f5f5]">Navigation:</strong> Arrow keys to move, Tab/Shift+Tab to change strings, Enter to advance column</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[#e85d04]">›</span>
-              <span><strong className="text-[#f5f5f5]">Insert:</strong> Press</span>
-              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#f5f5f5] text-xs font-mono border border-[#444444]">Enter</code>
-              <span>to add a column (pushes notes to next line)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[#e85d04]">›</span>
-              <span><strong className="text-[#f5f5f5]">Delete:</strong> Press</span>
-              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#f5f5f5] text-xs font-mono border border-[#444444]">Backspace</code>
-              <span>to clear current cell,</span>
-              <code className="px-2 py-0.5 bg-[#333333] rounded text-[#f5f5f5] text-xs font-mono border border-[#444444]">`</code>
-              <span>to delete numbers on selected column</span>
+        </header>
+
+        {/* Quick reference --- collapsible */}
+        <section className="no-print border-b border-line">
+          <button
+            onClick={() => setShowReference((v) => !v)}
+            aria-expanded={showReference}
+            className={`${eyebrow} flex items-center gap-2 py-4 hover:text-ink transition-colors cursor-pointer focus-visible:outline focus-visible:outline-1 focus-visible:outline-ink focus-visible:outline-offset-2`}
+          >
+            <span>Quick Reference</span>
+            <span className={`text-[0.8rem] leading-none transition-transform duration-200 ${showReference ? 'rotate-180' : ''}`}>⌄</span>
+          </button>
+          <div className={`grid transition-all duration-200 ease-out ${showReference ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+              <div className="flex flex-col gap-2.5 pb-5 text-[0.98rem] leading-relaxed text-ink-soft">
+                <p><span className="text-ink-faint font-mono mr-2">—</span><strong className="font-medium text-ink">Click</strong> a cell to select it, then type to enter notes</p>
+                <p><span className="text-ink-faint font-mono mr-2">—</span><strong className="font-medium text-ink">Numbers:</strong> 0–9 for frets</p>
+                <p className="flex items-baseline gap-1.5 flex-wrap">
+                  <span className="text-ink-faint font-mono mr-0.5">—</span>
+                  <strong className="font-medium text-ink">Techniques:</strong>
+                  <code className="font-mono text-[0.8rem] px-1.5 border border-line rounded-[2px]">h</code><span>hammer-on,</span>
+                  <code className="font-mono text-[0.8rem] px-1.5 border border-line rounded-[2px]">p</code><span>pull-off,</span>
+                  <code className="font-mono text-[0.8rem] px-1.5 border border-line rounded-[2px]">/</code><span>slide up,</span>
+                  <code className="font-mono text-[0.8rem] px-1.5 border border-line rounded-[2px]">\</code><span>slide down,</span>
+                  <code className="font-mono text-[0.8rem] px-1.5 border border-line rounded-[2px]">b</code><span>bend,</span>
+                  <code className="font-mono text-[0.8rem] px-1.5 border border-line rounded-[2px]">r</code><span>release,</span>
+                  <code className="font-mono text-[0.8rem] px-1.5 border border-line rounded-[2px]">x</code><span>mute,</span>
+                  <code className="font-mono text-[0.8rem] px-1.5 border border-line rounded-[2px]">~</code><span>vibrato,</span>
+                  <code className="font-mono text-[0.8rem] px-1.5 border border-line rounded-[2px]">s</code><span>slap</span>
+                </p>
+                <p><span className="text-ink-faint font-mono mr-2">—</span><strong className="font-medium text-ink">Navigation:</strong> Arrow keys to move, Tab/Shift+Tab to change strings, Enter to advance column</p>
+                <p className="flex items-baseline gap-1.5 flex-wrap">
+                  <span className="text-ink-faint font-mono mr-0.5">—</span>
+                  <strong className="font-medium text-ink">Insert:</strong> Press
+                  <code className="font-mono text-[0.8rem] px-1.5 border border-line rounded-[2px]">Enter</code>
+                  <span>to add a column (pushes notes to next line)</span>
+                </p>
+                <p className="flex items-baseline gap-1.5 flex-wrap">
+                  <span className="text-ink-faint font-mono mr-0.5">—</span>
+                  <strong className="font-medium text-ink">Delete:</strong> Press
+                  <code className="font-mono text-[0.8rem] px-1.5 border border-line rounded-[2px]">Backspace</code>
+                  <span>to clear current cell,</span>
+                  <code className="font-mono text-[0.8rem] px-1.5 border border-line rounded-[2px]">`</code>
+                  <span>to delete numbers on selected column</span>
+                </p>
+              </div>
             </div>
           </div>
+        </section>
+
+        {/* Global controls */}
+        <div className="no-print flex gap-6 flex-wrap py-4 border-b border-line">
+          <button className={btn} onClick={() => extendLines()}>Extend lines</button>
+          <button className={btn} onClick={() => shortenLines()}>Shorten lines</button>
+          <button className={`${btn} text-danger/70 hover:text-danger`} onClick={() => clearAll()}>Clear all</button>
+          <button className={`${btn} text-danger/70 hover:text-danger`} onClick={() => resetLines()}>Reset all</button>
         </div>
-        <div className="no-print bg-[#242424] border border-[#333333] rounded-xl p-4 flex gap-3 flex-wrap">
-          <button 
-            onClick={() => extendLines()}
-            className="px-4 py-2 text-sm font-medium rounded-lg border border-[#333333] bg-transparent text-[#a0a0a0] hover:bg-[#2a2a2a] hover:text-[#f5f5f5] transition-all cursor-pointer"
-          >
-            Extend Lines
-          </button>
-          <button 
-            onClick={() => shortenLines()}
-            className="px-4 py-2 text-sm font-medium rounded-lg border border-[#333333] bg-transparent text-[#a0a0a0] hover:bg-[#2a2a2a] hover:text-[#f5f5f5] transition-all cursor-pointer"
-          >
-            Shorten Lines
-          </button>
-          <button 
-            onClick={() => clearAll()}
-            className="px-4 py-2 text-sm font-medium rounded-lg border border-[#e85d04] bg-transparent text-[#e85d04] hover:bg-[#e85d04]/10 transition-all cursor-pointer"
-          >
-            Clear All
-          </button>
-          <button 
-            onClick={() => resetLines()}
-            className="px-4 py-2 text-sm font-medium rounded-lg border border-[#e85d04] bg-transparent text-[#e85d04] hover:bg-[#e85d04]/10 transition-all cursor-pointer"
-          >
-            Reset All
-          </button>
-        </div>
-        {lines.map((line, lineIndex) => 
-          <div 
+
+        {/* Measures */}
+        {lines.map((line, lineIndex) =>
+          <div
             key={line.id}
             onClick={() => handleMeasureClick(line.id)}
-            className={`bg-[#242424] rounded-xl p-5 transition-all cursor-pointer ${
-              focusedMeasure === line.id 
-                ? 'border-2 border-[#e85d04]' 
-                : 'border border-[#333333] hover:border-[#444444]'
-            }`}
+            className="pt-8 pb-2"
           >
-            <div className="flex justify-between items-center mb-4 pb-3 border-b border-[#333333]">
-              <span className="text-xs font-semibold text-[#a0a0a0] uppercase tracking-wider">
+            <div className="flex justify-between items-center mb-3">
+              <span className={`${eyebrow} ${focusedMeasure === line.id ? 'text-ink' : ''} transition-colors`}>
                 Measure {lineIndex + 1}
               </span>
-              <div className="no-print flex gap-2">
-                <button 
+              <div className="no-print flex gap-5">
+                <button
+                  className={`${btn} text-danger/70 hover:text-danger`}
                   onClick={(e) => { e.stopPropagation(); clearLine(line.id); }}
-                  className="px-4 py-1.5 text-xs font-medium rounded-lg border border-[#e85d04] bg-transparent text-[#e85d04] hover:bg-[#e85d04]/10 transition-all cursor-pointer"
                 >
                   Clear
                 </button>
                 <button
+                  className={btn}
                   onClick={(e) => { e.stopPropagation(); deleteLine(line.id); }}
                   disabled={lines.length <= 1}
-                  className="px-4 py-1.5 text-xs font-medium rounded-lg border border-[#444444] bg-transparent text-[#666666] hover:bg-[#333333] transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                 >
                   Delete
                 </button>
               </div>
             </div>
-            <div className="tab-grid overflow-x-auto pb-2">
-              {STRING_NAMES.map((stringName, stringIndex) => 
+            <div className="tab-scroll overflow-x-auto pb-1.5">
+              {STRING_NAMES.map((stringName, stringIndex) =>
                 <div key={stringName} className="flex items-center h-[26px]">
-                  <span 
-                    className="w-6 text-[13px] font-medium text-[#a0a0a0] text-center shrink-0"
-                    style={{ fontFamily: 'var(--font-mono)' }}
-                  >
-                    {stringName}
-                  </span>
-                  <span 
-                    className="w-6 text-sm font-normal text-[#666666] text-center shrink-0"
-                    style={{ fontFamily: 'var(--font-mono)' }}
-                  >
-                    |
-                  </span>
+                  <span className="w-6 text-center shrink-0 font-mono text-[13px] text-ink-faint">{stringName}</span>
+                  <span className="w-5 text-center shrink-0 font-mono text-sm text-line-strong">|</span>
                   <div className="flex">
-                    {line.strings[stringIndex].split('').map((char, charPosition) => 
+                    {line.strings[stringIndex].split('').map((char, charPosition) =>
                       <input
                         key={charPosition}
                         ref={(el) => {
-                          const key = getCellKey(
-                            line.id,
-                            stringIndex,
-                            charPosition
-                          )
+                          const key = getCellKey(line.id, stringIndex, charPosition)
                           if(el) {
                             cellRefs.current.set(key, el)
                           } else {
@@ -537,7 +459,7 @@ function App() {
                           }
                         }}
                         value={char}
-                        className={`tab-cell courier ${
+                        className={`tab-cell test${
                           activeCell?.lineId === line.id &&
                           activeCell?.stringIndex === stringIndex &&
                           activeCell?.position === charPosition
@@ -555,28 +477,18 @@ function App() {
                       />
                     )}
                   </div>
-                  <span 
-                    className="w-6 text-sm font-normal text-[#666666] text-center"
-                    style={{ fontFamily: 'var(--font-mono)' }}
-                  >
-                    |
-                  </span>
+                  <span className="w-5 text-center shrink-0 font-mono text-sm text-line-strong">|</span>
                 </div>
               )}
             </div>
           </div>
         )}
-        <div className="no-print bg-[#242424] border border-[#333333] rounded-xl p-5">
-          <h3 className="text-xs font-semibold text-[#f5f5f5] uppercase tracking-wider mb-4">
-            Preview
-          </h3>
-          <pre 
-            className="bg-[#1a1a1a] text-[#a0a0a0] py-5 px-6 rounded-lg text-[13px] leading-[1.4] overflow-x-auto whitespace-pre m-0 border border-[#333333]"
-            style={{ fontFamily: 'var(--font-mono)' }}
-          >
-            {previewTabs()}
-          </pre>
-        </div>
+
+        {/* Preview */}
+        <section className="no-print mt-10 pt-6 border-t border-line">
+          <h3 className={eyebrow}>Preview</h3>
+          <pre className="tab-scroll mt-4 font-mono text-[13px] leading-normal text-ink-soft whitespace-pre overflow-x-auto">{previewTabs()}</pre>
+        </section>
 
       </div>
     </div>
